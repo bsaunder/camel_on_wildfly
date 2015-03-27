@@ -98,7 +98,7 @@
     <div class="slides">
 
       <section data-background="images/rh_bg_3.png" data-background-size="contain" data-background-position="center" data-transition="slide">
-        <h1 align=left>Camel on WildFly 8</h1>
+        <h1 align=left>Camel on WildFly</h1>
         <h2 align=left></h2>
         <br />
         <h3 align=left>
@@ -110,10 +110,52 @@
       <section>
         <h2>Agenda</h2>
         <ul>
+          <li>Introduction</li>
           <li>Deployment Options</li>
           <li>Camel-WildFly Subsystem</li>
           <li>Impact on Red Hat Products</li>
         </ul>
+      </section>
+
+      <section data-background="images/rh_bg_4.png" data-background-size="contain">
+        <h1>Introduction</h1>
+      </section>
+
+      <section>
+        <h2>What is Camel</h2>
+        <p>
+          Open-Source Integration Framework based on known Enterprise Integration Patterns
+        </p>
+        <p>
+          Defines Routing and Mediation Rules
+        </p>
+        <p>
+          Similar to an ESB
+        </p>
+        <p>
+          Core Integration Component in JBoss Fuse and JBoss Fuse Service Works
+        </p>
+      </section>
+
+      <section>
+        <h2>What is WildFly</h2>
+        <p>
+          Open-Source Java Application Server from JBoss
+        </p>
+        <p>
+          Upstream project for JBoss Enterprise Application Platform
+        </p>
+        <p>
+          Similar to an ESB
+        </p>
+        <p>
+          Core Integration Component in JBoss Fuse and JBoss Fuse Service Works
+        </p>
+      </section>
+
+      <section>
+        <h2>The Middle Layer</h2>
+        <img src="images/StackDiagram.png" alt="Stack Diagram" width="100%"/>
       </section>
 
       <section data-background="images/rh_bg_1.png" data-background-size="contain">
@@ -123,14 +165,35 @@
       <section>
         <h2>Bundled with Application</h2>
         <p>
-          TODO
+          Include Libraries like any other JAR
+        </p>
+        <p>
+          Manually Manage Camel Context
+        </p>
+        <p>
+          Manually Manage Routes
+        </p>
+        <p>
+          Works with JEE/CDI, Spring, or Servlets
         </p>
       </section>
 
       <section>
         <h2>Camel-Wildfly Subsystem</h2>
         <p>
-          TODO
+          Available now in Wildfly 8.1+
+        </p>
+        <p>
+          Recommended Approach
+        </p>
+        <p>
+          Provides Best Integration with JEE
+        </p>
+        <p>
+          No Need to Manually Manage Context or Routes
+        </p>
+        <p>
+          Includes Management Console based on HawtIO
         </p>
       </section>
 
@@ -139,52 +202,141 @@
       </section>
 
       <section>
-        <h2>Section 1</h2>
+        <section>
+          <h2>Context Definitions &amp; Deployments</h2>
+          <p>
+            Defined inside standalone XML file
+          </p>
+          <p>
+            Deployed with a <strong>-camel-context.xml</strong> suffix
+          </p>
+          <p>
+            Deployment can contain multiple contexts
+          </p>
+          <p>
+            Contexts are injectable via CDI
+          </p>
+          <pre>
+            <code data-trim class="java" >
+@Resource(name = "java:jboss/camel/context/mycontext")
+CamelContext camelContext;
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Sample Context</h2>
+          <pre>
+            <code data-trim>
+&lt;subsystem xmlns="urn:jboss:domain:camel:1.0"&gt;
+   &lt;camelContext id="system-context-1"&gt;
+     &lt;![CDATA[
+     &lt;route&gt;
+       &lt;from uri="direct:start"/&gt;
+       &lt;transform&gt;
+         &lt;simple&gt;Hello #{body}&lt;/simple&gt;
+       &lt;/transform&gt;
+     &lt;/route&gt;
+     ]]&gt;
+   &lt;/camelContext&gt;
+&lt;/subsystem&gt;
+            </code>
+          </pre>
+        </section>
+      </section>
+
+      <section>
+        <h2>Management Console</h2>
         <p>
-          TODO
+          Based on HawtIO
+        </p>
+        <p>
+          Full Management of Camel
+        </p>
+        <p>
+          <ul>
+            <li>
+              Start/Stop Routes
+            </li>
+            <li>
+              Manage Contexts
+            </li>
+            <li>
+              Debug and Monitor Message Flows
+            </li>
+            <li>
+              Etc...
+            </li>
+          </ul>
+        </p>
+        <img src="images/hawtio-camel-01.png" width="100%"/>
+      </section>
+
+      <section>
+        <h2>Arquillian Support</h2>
+        <p>
+          Uses WildFly Arquillian Managed Container
+        </p>
+        <p>
+          Uses Custom Test Enrichers
+        </p>
+        <p>
+          Allows Injection of WildFly Camel Specific Types
+        </p>
+        <pre>
+          <code data-trim class="java" >
+@ArquillianResource
+CamelContextFactory contextFactory;
+
+@ArquillianResource
+CamelContextRegistry contextRegistry;
+          </code>
+        </pre>
+      </section>
+
+      <section>
+        <h2>JEE Integration</h2>
+        <p>
+          Supports all Major JEE Standards
+        </p>
+        <p>
+          <ul>
+            <li>CDI</li>
+            <li>JAX-RS</li>
+            <li>JAX-WS</li>
+            <li>JMS</li>
+            <li>JMX</li>
+            <li>JNDI</li>
+            <li>JPA</li>
+          </ul>
+        </p>
+        <p>
+          Relies on Existing Camel JEE Related Components
         </p>
       </section>
 
       <section>
-        <h2>Section 2</h2>
+        <h2>Building a Route</h2>
         <p>
-          TODO
+          Routes Automatically Started at Runtime
         </p>
-      </section>
+        <p>
+          No Need to Manually Manage Routes or Add to Context
+        </p>
+        <pre>
+          <code data-trim class="java" >
+  @Startup
+  @ApplicationScoped
+  @ContextName("cdi-context")
+  public class MyRouteBuilder extends RouteBuilder {
 
-      <section>
-        <h2>Section 3</h2>
-        <p>
-          TODO
-        </p>
-      </section>
-
-      <section>
-        <h2>Section 4</h2>
-        <p>
-          TODO
-        </p>
-      </section>
-
-      <section>
-        <h2>Section 5</h2>
-        <p>
-          TODO
-        </p>
-      </section>
-
-      <section>
-        <h2>Section 6</h2>
-        <p>
-          TODO
-        </p>
-      </section>
-
-      <section>
-        <h2>Section 7</h2>
-        <p>
-          TODO
-        </p>
+      @Override
+      public void configure() throws Exception {
+          from("direct:start").transform(body().prepend("Hi"));
+      }
+  }
+          </code>
+        </pre>
       </section>
 
       <section data-background="images/rh_bg_2.png" data-background-size="contain">
@@ -197,16 +349,13 @@
           Full EAP Subsystem
         </p>
         <p>
-          Improved Integration with JEE Standards
+          Full Integration with JEE Standards
         </p>
         <p>
           Updated JEE Related Camel Components
         </p>
         <p>
           Full Arquillian Support
-        </p>
-        <p>
-          Available now in Wildfly 8.1+
         </p>
         <p>
           Official Support in future Fuse Release
